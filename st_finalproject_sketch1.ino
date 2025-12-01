@@ -39,10 +39,10 @@ float CURRENT = 0;
 bool NOTEON = false;
 
 //speed of notes and between the notes definition
-unsigned long stepT0 = 0; // last time the note play
-unsigned long stepMs = 160; // estimated stop time between each note
-unsigned long gateT0 = 0; // time that a note starts to play
-unsigned long gateMs = 145; // note length
+unsigned long stepT0 = 0;
+unsigned long stepMs = 160;
+unsigned long gateT0 = 0;
+unsigned long gateMs = 145; 
 
 //scale's index
 int STEPO1 = 4;
