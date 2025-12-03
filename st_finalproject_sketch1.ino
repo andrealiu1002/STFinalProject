@@ -1,3 +1,16 @@
+
+//C++, multi pins control brainstorming: 
+//notes - delay - notes, scale playing in random orders
+//set a table of range
+//default scale phrygian
+//own rhythm, VRX can change the jitter conditions, note length also control by VRY and knob
+//IR reading and motor work at the same time
+
+//IR: black min white maj, Joystick X note jitter time Y random notes cutting
+//LDR: dotted notes if press(darker), knob rootnotes and melodic range
+//stepT0 + stepMs control when is the next note coming out
+//gateT0 + gateMs for note length
+
 //pins
 int IR = 2;
 int MOTOR = 5;
@@ -40,9 +53,9 @@ bool NOTEON = false;
 
 //speed of notes and between the notes definition
 unsigned long stepT0 = 0;
-unsigned long stepMs = 160;
-unsigned long gateT0 = 0;
-unsigned long gateMs = 145; 
+unsigned long stepMs = 160; // estimated stop time between each note
+unsigned long gateT0 = 0; // time that a note starts to play
+unsigned long gateMs = 145; // note length
 
 //scale's index
 int STEPO1 = 4;
@@ -56,14 +69,14 @@ int irREAD(){
 }
 
 //motor controll
-int DCmotor = 280;
+int DCmotor = 180;
 unsigned long MOidx = 0;
 bool motorOn = false;
 
 // knob - root midi
 int rootFromKnob(int knobValue){
   int base = 48;
-  int offset = map(knobValue, 0, 1023, -8, +8);
+  int offset = map(knobValue, 0, 1023, -8, +12);
   return base + TRANSPOSE + offset;
 }
 
@@ -79,7 +92,7 @@ void stopNote(){
   noTone(SPEAKER);
 }
 
-//setup procedure
+//setup defult procedure
 void setup(){
   pinMode(IR, INPUT_PULLUP);
   pinMode(MOTOR, OUTPUT);
@@ -97,14 +110,14 @@ void loop(){
 
 //DC motor 3secs and rest 8secs
   if(motorOn){
-    if(now - MOidx >= 3000){
+    if(now - MOidx >= 2000){
       analogWrite(MOTOR, 0);
       motorOn = false;
       MOidx   = now;
     }
   }
   else{
-    if(now - MOidx >= 7000){
+    if(now - MOidx >= 8000){
       analogWrite(MOTOR, DCmotor);
       motorOn = true;
       MOidx   = now;
@@ -161,10 +174,10 @@ if(firststep){
         root -= 5;
       }
     }
-
+//possibilities of random note playing
      int r = random(0,10);
-    if(r < 7){
-      int d = random(0,3) - 1;
+    if(r < 5){
+      int d = random(0,5) - 1;
       STEPO1 += d;
       if(STEPO1 < 0) STEPO1 = 0;
       if(STEPO1 > len-1) STEPO1 = len-1;
@@ -175,6 +188,7 @@ if(firststep){
     int degree = scale[STEPO1];
     int midi = root + degree;
 
+//notes rest statement
     int restBase = (irW == 1) ? 6 : 20;
     int restAdd  = map(vy, 0, 1023, 0, 20);
     int restFromL = map(light, 0, 1023, 0,25);
@@ -188,7 +202,7 @@ if(firststep){
       float f = MIDI_TABLE(midi);  
       startNote(f);
 
-//gate: LDR main control, y in samll adjustment
+//gate: LDR main control, y for samll adjustment
       unsigned long baseGate = map(light, 0, 1023, 80,320);
       long gateY = map(vy, 0, 1023, -40, 80);
 
