@@ -190,7 +190,7 @@ if(firststep){
 
 //notes rest statement
     int restBase = (irW == 1) ? 6 : 20;
-    int restAdd  = map(vy, 0, 1023, 0, 20);
+    int restAdd = map(vy, 0, 1023, 0, 20);
     int restFromL = map(light, 0, 1023, 0,25);
     int restProb = restBase + restAdd + restFromL;
     if(restProb > 85) restProb = 85;
@@ -207,7 +207,7 @@ if(firststep){
       long gateY = map(vy, 0, 1023, -40, 80);
 
       long gateTemp = (long)baseGate + gateY;
-      if(gateTemp < 40)  gateTemp = 40;
+      if(gateTemp < 40) gateTemp = 40;
       if(gateTemp > 600) gateTemp = 600;
       gateMs = (unsigned long)gateTemp;
     }
